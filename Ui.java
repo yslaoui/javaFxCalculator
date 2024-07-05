@@ -1,4 +1,4 @@
-package calculator;
+package javaFxCalculator;
 
 import javafx.application.Application;
 import javafx.collections.ObservableList;
@@ -44,7 +44,7 @@ public class Ui extends Application {
 
         // Axis
         NumberAxis xAxis = new NumberAxis(0, 30, 1);
-        NumberAxis yAxis = new NumberAxis(0, 27500, 2500);
+        NumberAxis yAxis = new NumberAxis(0, 100000, 2500);
 
         // Data
         Map<String, Map<Integer, Double>> data = new HashMap<>();
@@ -55,13 +55,10 @@ public class Ui extends Application {
             data.get("savings").putIfAbsent(i, (double) i*savingsSlider.getValue());
             data.get("interest").putIfAbsent(i, (double) i*600*(1+0.05));
         }
-        savingsSlider.valueProperty().addListener((observable, oldValue, newValue)->{
-            for (int i=0; i<=xAxis.getUpperBound(); i++) {
-                data.get("savings").put(i, (double) i*newValue);
-            }
-        });
 
-        // Chart
+
+
+        // Initial populating of  Chart
         LineChart<Number, Number> chart = new LineChart(xAxis, yAxis);
         chart.setTitle("Savings calculator");
         for (String key: data.keySet()) {
@@ -72,8 +69,19 @@ public class Ui extends Application {
                 list_series.add(new XYChart.Data(pair.getKey(), pair.getValue()));
             }
             chart.getData().addAll(series);
-
         }
+
+        // Changing the chart when the slide value changes.
+        XYChart.Series<Number, Number> savingSeries = chart.getData().get(0);
+        savingsSlider.valueProperty().addListener((observable, oldValue, newValue)->{
+            for (int i=0; i<=xAxis.getUpperBound(); i++) {
+                data.get("savings").put(i,  i*newValue.doubleValue()*12);
+                savingSeries.getData().set(i, new XYChart.Data<>(i,i*newValue.doubleValue()*12));
+            }
+        });
+
+
+
 
         // Main pane
         BorderPane mainPane = new BorderPane();
