@@ -73,14 +73,20 @@ public class Ui extends Application {
 
         // Changing the chart when the slide value changes.
         XYChart.Series<Number, Number> savingSeries = chart.getData().get(0);
+        XYChart.Series<Number, Number> interestSeries = chart.getData().get(1);
         savingsSlider.valueProperty().addListener((observable, oldValue, newValue)->{
             for (int i=0; i<=xAxis.getUpperBound(); i++) {
                 data.get("savings").put(i,  i*newValue.doubleValue()*12);
                 savingSeries.getData().set(i, new XYChart.Data<>(i,i*newValue.doubleValue()*12));
             }
         });
-
-
+        interestSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            for (int i=0; i <= xAxis.getUpperBound(); i++) {
+                double dataValue = data.get("savings").get(i)* Math.pow(1+newValue.doubleValue()/100, i);
+                data.get("interest").put(i, dataValue );
+                interestSeries.getData().set(i, new XYChart.Data<>(i, dataValue));
+            }
+        });
 
 
         // Main pane
